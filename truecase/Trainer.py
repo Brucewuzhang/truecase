@@ -62,11 +62,16 @@ class Trainer:
 
         # second pass to get bi-gram tri-gram statistics
         for sentence in corpus:
-            if not self.check_sentence_sanity(sentence):
+            if not self.check_sentence_sanity(sentence) or len(sentence) == 1:
                 continue
 
+            if self.get_casing(sentence[0]) == "initialUpper" and sentence[1] not in '°#$%&' and \
+                    self.get_casing(sentence[1]) not in ["allUpper", "numeric", "initialUpper"]:
+                # first word and initialUpper not ner, count only unigram
+                sentence = sentence[1:]
             for word_idx, word in enumerate(sentence):
                 word_lower = word.lower()
+                # todo: count bigram and trigram
                 self.__function_one(sentence, word, word_idx, word_lower)
                 self.__function_two(sentence, word, word_idx)
 
